@@ -1,9 +1,9 @@
-﻿using SQLite;
+using SQLite;
 using MauiApp1.Models;
 
 namespace MauiApp1.Services
 {
-    class ProductoService
+    public class ProductoService
     {
         readonly SQLiteAsyncConnection _database;
 
