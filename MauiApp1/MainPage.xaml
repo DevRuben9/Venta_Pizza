@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MauiApp1.ViewModels"
+             xmlns:model="clr-namespace:MauiApp1.Models"
+             x:Class="MauiApp1.MainPage"
+             Title="Catálogo de Productos">
+
+    <ContentPage.BindingContext>
+        <local:MainPageViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid>
+        <!-- Indicador de carga -->
+        <ActivityIndicator IsVisible="{Binding IsLoading}"
+                          IsRunning="{Binding IsLoading}"
+                          VerticalOptions="Center"
+                          HorizontalOptions="Center" />
+
+        <!-- Contenido principal -->
+        <ScrollView IsVisible="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+            <VerticalStackLayout Padding="20" Spacing="20">
+                
+                <!-- Header -->
+                <VerticalStackLayout Spacing="10">
+                    <Image Source="dotnet_bot.png"
+                           HeightRequest="100"
+                           Aspect="AspectFit"
+                           HorizontalOptions="Center" />
+                    
+                    <Label Text="Inventario de Productos"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center" />
+                    
+                    <Button Text="🔄 Actualizar Lista"
+                            Command="{Binding LoadProductosCommand}"
+                            BackgroundColor="#2196F3"
+                            TextColor="White"
+                            CornerRadius="8"
+                            Padding="15,10"
+                            HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <!-- Lista de productos -->
+                <CollectionView ItemsSource="{Binding Productos}"
+                               Margin="0,20,0,0">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="15" />
+                    </CollectionView.ItemsLayout>
+                    
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="model:Producto">
+                            <Border BackgroundColor="{AppThemeBinding Light=White, Dark=#2D2D30}"
+                                   Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                                   StrokeThickness="1"
+                                   Padding="20"
+                                   Margin="0,5"
+                                   HorizontalOptions="FillAndExpand">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                                
+                                <Border.Shadow>
+                                    <Shadow Brush="Black" 
+                                           Offset="0,2" 
+                                           Radius="8" 
+                                           Opacity="0.1" />
+                                </Border.Shadow>
+                                
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto,*">
+                                    <!-- Icono del producto -->
+                                    <Label Grid.Row="0"
+                                           Text="🍕"
+                                           FontSize="48"
+                                           HorizontalOptions="Center"
+                                           Margin="0,0,0,10" />
+                                    
+                                    <!-- Nombre del producto -->
+                                    <Label Grid.Row="1"
+                                           Text="{Binding Nombre}"
+                                           FontSize="20"
+                                           FontAttributes="Bold"
+                                           HorizontalOptions="Center"
+                                           TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                                    
+                                    <!-- Información del producto -->
+                                    <VerticalStackLayout Grid.Row="2" Spacing="5" Margin="0,10,0,10">
+                                        <Label Text="{Binding Cantidad, StringFormat='📦 Cantidad en stock: {0}'}"
+                                               FontSize="14"
+                                               TextColor="{AppThemeBinding Light=#666666, Dark=#CCCCCC}"
+                                               HorizontalOptions="Center" />
+                                        
+                                        <Label Text="{Binding Id, StringFormat='🏷️ ID: {0}'}"
+                                               FontSize="12"
+                                               FontAttributes="Italic"
+                                               TextColor="{AppThemeBinding Light=#888888, Dark=#AAAAAA}"
+                                               HorizontalOptions="Center" />
+                                    </VerticalStackLayout>
+                                    
+                                    <!-- Estado del producto -->
+                                    <Border Grid.Row="3"
+                                           BackgroundColor="{Binding Estado, Converter={StaticResource BoolToStatusColorConverter}}"
+                                           Stroke="Transparent"
+                                           Padding="10,5"
+                                           HorizontalOptions="Center"
+                                           Margin="0,5,0,10">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="15" />
+                                        </Border.StrokeShape>
+                                        
+                                        <Label Text="{Binding Estado, Converter={StaticResource BoolToStatusTextConverter}}"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               TextColor="White"
+                                               HorizontalOptions="Center" />
+                                    </Border>
+                                    
+                                    <!-- Botón de acción -->
+                                    <Button Grid.Row="4"
+                                           Text="{Binding Estado, Converter={StaticResource BoolToButtonTextConverter}}"
+                                           BackgroundColor="{Binding Estado, Converter={StaticResource BoolToButtonColorConverter}}"
+                                           TextColor="White"
+                                           CornerRadius="8"
+                                           Padding="0,12"
+                                           Command="{Binding Source={RelativeSource AncestorType={x:Type local:MainPageViewModel}}, Path=VerDetallesCommand}"
+                                           CommandParameter="{Binding .}"
+                                           IsEnabled="{Binding Estado}"
+                                           HorizontalOptions="Fill" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
